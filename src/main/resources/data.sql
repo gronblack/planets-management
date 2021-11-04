@@ -8,18 +8,18 @@ VALUES ('Nius Maximus', 52),
        ('Robert B. Weide ', 80),
        ('Ronny Coleman', 25);
 
-INSERT INTO planet (NAME)
-VALUES ('Agamar'),
-       ('Ando'),
-       ('Bogano'),
-       ('Cato Neimoidia'),
-       ('Devaron'),
-       ('Endor'),
-       ('Fondor'),
-       ('Hosnian Prime'),
-       ('Ord Mantell'),
-       ('Rishi'),
-       ('Sorgan'),
-       ('Savareen'),
-       ('Vandor-1'),
-       ('Zygerria');
+INSERT INTO planet (NAME, LORD_ID)
+VALUES ('Agamar', 2),
+       ('Ando', 2),
+       ('Bogano', 1),
+       ('Cato Neimoidia', 3),
+       ('Devaron', 4),
+       ('Endor', 5),
+       ('Fondor', 6),
+       ('Hosnian Prime', 7),
+       ('Ord Mantell', 7),
+       ('Rishi', 7),
+       ('Sorgan', 8),
+       ('Savareen', 5),
+       ('Vandor-1', 1),
+       ('Zygerria', NULL);

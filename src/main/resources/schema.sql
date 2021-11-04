@@ -8,5 +8,7 @@ CREATE TABLE lord
 CREATE TABLE planet
 (
     id               INTEGER IDENTITY,
-    name             VARCHAR NOT NULL UNIQUE
+    name             VARCHAR NOT NULL UNIQUE,
+    lord_id          INTEGER,
+    FOREIGN KEY (lord_id) REFERENCES lord (id)
 );
