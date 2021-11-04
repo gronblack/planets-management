@@ -6,7 +6,11 @@ VALUES ('Nius Maximus', 52),
        ('Ferdinand Porsche', 62),
        ('Mark Strong', 38),
        ('Robert B. Weide ', 80),
-       ('Ronny Coleman', 25);
+       ('Ronny Coleman', 25),
+       ('Sam Fisher', 42),
+       ('Mick Jagger', 50),
+       ('Klaus Meine', 55),
+       ('Nikita Abramov', 48);
 
 INSERT INTO planet (NAME, LORD_ID)
 VALUES ('Agamar', 2),

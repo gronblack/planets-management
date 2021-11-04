@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.github.gronblack.pm.util.JsonUtil;
+import com.github.gronblack.pm.util.json.JsonUtil;
 
 import java.sql.SQLException;
 

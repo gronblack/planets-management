@@ -1,4 +1,4 @@
-package com.github.gronblack.pm.util;
+package com.github.gronblack.pm.util.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
