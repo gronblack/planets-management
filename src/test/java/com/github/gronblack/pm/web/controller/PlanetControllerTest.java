@@ -1,8 +1,7 @@
 package com.github.gronblack.pm.web.controller;
 
-import com.github.gronblack.pm.model.Lord;
-import com.github.gronblack.pm.repository.LordRepository;
-import com.github.gronblack.pm.util.LordsUtil;
+import com.github.gronblack.pm.model.Planet;
+import com.github.gronblack.pm.repository.PlanetRepository;
 import com.github.gronblack.pm.util.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,37 +9,35 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.List;
-
 import static com.github.gronblack.pm.web.testdata.CommonTD.*;
-import static com.github.gronblack.pm.web.testdata.LordTD.*;
+import static com.github.gronblack.pm.web.testdata.PlanetTD.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class LordControllerTest extends BaseControllerTest {
-    private static final String REST_URL = LordController.REST_URL + '/';
+class PlanetControllerTest extends BaseControllerTest {
+    private static final String REST_URL = PlanetController.REST_URL + '/';
 
     @Autowired
-    private LordRepository repository;
+    private PlanetRepository repository;
 
     @Test
     void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL)
-                .param("pageSize", String.valueOf(12)))
+                .param("pageSize", String.valueOf(14)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER_TO.contentJson(lordTos));
+                .andExpect(MATCHER_TO.contentJson(planetTos));
     }
 
     @Test
-    void getWithPlanets() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + lord7.getId()))
+    void get() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + planet2.getId()))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(WITH_PLANETS_MATCHER.contentJson(lord7FullTo));
+                .andExpect(WITH_LORD_MATCHER.contentJson(planet2FullTo));
     }
 
     @Test
@@ -51,40 +48,22 @@ class LordControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void getIdle() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "idle"))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER_TO.contentJson(LordsUtil.getTos(List.of(lord11, lord10, lord12, lord9))));
-    }
-
-    @Test
-    void getYoung() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "young"))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MATCHER_TO.contentJson(LordsUtil.getTos(List.of(lord8, lord4, lord6, lord9, lord12, lord10, lord1, lord11, lord2, lord5))));
-    }
-
-    @Test
     void createWithLocation() throws Exception {
-        Lord newLord = new Lord(null, "New Lord", 30, 185);
+        Planet newPlanet = new Planet(null, "New Planet", 56236);
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newLord)))
+                .content(JsonUtil.writeValue(newPlanet)))
                 .andExpect(status().isCreated());
-        Lord created = MATCHER.readFromJson(action);
+        Planet created = MATCHER.readFromJson(action);
         int newId = created.getId();
-        newLord.setId(newId);
-        MATCHER.assertMatch(created, newLord);
-        MATCHER.assertMatch(repository.getById(newId), newLord);
+        newPlanet.setId(newId);
+        MATCHER.assertMatch(created, newPlanet);
+        MATCHER.assertMatch(repository.getById(newId), newPlanet);
     }
 
     @Test
     void createInvalid() throws Exception {
-        Lord invalid = new Lord(null, "", 0, 0);
+        Planet invalid = new Planet(null, "", 100569);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))
@@ -94,7 +73,7 @@ class LordControllerTest extends BaseControllerTest {
 
     @Test
     void update() throws Exception {
-        Lord updated = new Lord(EXIST_ID, "Updatable Lord", 100, 185);
+        Planet updated = new Planet(EXIST_ID, "Updatable Planet", 56987);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
@@ -105,7 +84,7 @@ class LordControllerTest extends BaseControllerTest {
 
     @Test
     void updateInvalid() throws Exception {
-        Lord invalid = new Lord(EXIST_ID, "", 0, 0);
+        Planet invalid = new Planet(EXIST_ID, "", 0);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))
@@ -115,7 +94,7 @@ class LordControllerTest extends BaseControllerTest {
 
     @Test
     void updateHtmlUnsafe() throws Exception {
-        Lord updated = new Lord(EXIST_ID, "<script>alert(123)</script>", 100, 180);
+        Planet updated = new Planet(EXIST_ID, "<script>alert(123)</script>", 15836);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
@@ -125,10 +104,10 @@ class LordControllerTest extends BaseControllerTest {
 
     @Test
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + lord12.getId()))
+        perform(MockMvcRequestBuilders.delete(REST_URL + planet10.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertFalse(repository.findById(lord12.getId()).isPresent());
+        assertFalse(repository.findById(planet10.getId()).isPresent());
     }
 
     @Test

@@ -1,9 +1,9 @@
 package com.github.gronblack.pm.web.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.github.gronblack.pm.model.Lord;
 import com.github.gronblack.pm.repository.LordRepository;
-import com.github.gronblack.pm.util.json.Views;
+import com.github.gronblack.pm.to.LordFullTo;
+import com.github.gronblack.pm.to.LordTo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +16,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.gronblack.pm.util.LordsUtil.createFullToOptional;
+import static com.github.gronblack.pm.util.LordsUtil.getTos;
 import static com.github.gronblack.pm.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.gronblack.pm.util.validation.ValidationUtil.checkNew;
 
@@ -31,31 +33,27 @@ public class LordController {
     }
 
     @GetMapping
-    @JsonView(Views.Public.class)
-    public List<Lord> getAll(@RequestParam Map<String,String> params) {
+    public List<LordTo> getAll(@RequestParam Map<String,String> params) {
         log.info("getAll");
-        return repository.findAll(repository.createPageRequest(params)).toList();
+        return getTos(repository.findAll(repository.createPageRequest(params)).toList());
     }
 
     @GetMapping("/{id}")
-    @JsonView(Views.Internal.class)
-    public ResponseEntity<Lord> getWithPlanets(@PathVariable int id) {
+    public ResponseEntity<LordFullTo> getWithPlanets(@PathVariable int id) {
         log.info("getWithPlanets {}", id);
-        return ResponseEntity.of(repository.getWithPlanets(id));
+        return ResponseEntity.of(createFullToOptional(repository.getWithPlanets(id), id));
     }
 
     @GetMapping("/idle")
-    @JsonView(Views.Public.class)
-    public List<Lord> getIdle(@RequestParam Map<String,String> params) {
+    public List<LordTo> getIdle(@RequestParam Map<String,String> params) {
         log.info("getIdle");
-        return repository.getIdle(repository.createPageRequest(params));
+        return getTos(repository.getIdle(repository.createPageRequest(params)));
     }
 
     @GetMapping("/young")
-    @JsonView(Views.Public.class)
-    public List<Lord> getYoung() {
+    public List<LordTo> getYoung() {
         log.info("getIdle");
-        return repository.getYoung();
+        return getTos(repository.getYoung());
     }
 
     @DeleteMapping("/{id}")

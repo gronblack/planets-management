@@ -1,8 +1,6 @@
 package com.github.gronblack.pm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.github.gronblack.pm.util.json.Views;
 import com.github.gronblack.pm.util.validation.NoHtml;
 import lombok.*;
 import org.springframework.data.domain.Persistable;
@@ -23,14 +21,12 @@ public abstract class BaseEntity implements Persistable<Integer>, HasId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonView(Views.Public.class)
     protected Integer id;
 
     @NotBlank
     @Size(min = 1, max = 100)
     @Column(name = "name", nullable = false)
     @NoHtml
-    @JsonView(Views.Public.class)
     protected String name;
 
     @JsonIgnore

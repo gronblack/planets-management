@@ -1,7 +1,6 @@
 package com.github.gronblack.pm.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.github.gronblack.pm.util.json.Views;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,16 +19,20 @@ public class Lord extends BaseEntity {
 
     @Column(name = "age", nullable = false)
     @Positive
-    @JsonView(Views.Public.class)
     private int age;
 
+    @Column(name = "height", nullable = false)
+    @Positive
+    private int height;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "lord")
-    @JsonView(Views.Internal.class)
+    @JsonManagedReference
     @ToString.Exclude
     private Set<Planet> planets;
 
-    public Lord(Integer id, @NotBlank @Size(min = 1, max = 100) String name, int age) {
+    public Lord(Integer id, @NotBlank @Size(min = 1, max = 100) String name, int age, int height) {
         super(id, name);
         this.age = age;
+        this.height = height;
     }
 }
