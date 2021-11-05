@@ -1,12 +1,10 @@
-package com.github.gronblack.pm.web;
+package com.github.gronblack.pm.web.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.gronblack.pm.model.Lord;
 import com.github.gronblack.pm.repository.LordRepository;
 import com.github.gronblack.pm.util.json.Views;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
+import static com.github.gronblack.pm.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.gronblack.pm.util.validation.ValidationUtil.checkNew;
 
 @RestController
@@ -32,9 +32,9 @@ public class LordController {
 
     @GetMapping
     @JsonView(Views.Public.class)
-    public List<Lord> getAll() {
+    public List<Lord> getAll(@RequestParam Map<String,String> params) {
         log.info("getAll");
-        return repository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+        return repository.findAll(repository.createPageRequest(params)).toList();
     }
 
     @GetMapping("/{id}")
@@ -46,9 +46,9 @@ public class LordController {
 
     @GetMapping("/idle")
     @JsonView(Views.Public.class)
-    public List<Lord> getIdle() {
+    public List<Lord> getIdle(@RequestParam Map<String,String> params) {
         log.info("getIdle");
-        return repository.getIdle();
+        return repository.getIdle(repository.createPageRequest(params));
     }
 
     @GetMapping("/young")
@@ -74,5 +74,13 @@ public class LordController {
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@PathVariable int id, @Valid @RequestBody Lord lord) {
+        log.info("update {} with id={}", lord, id);
+        assureIdConsistent(lord, id);
+        repository.save(lord);
     }
 }

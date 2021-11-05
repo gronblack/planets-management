@@ -1,6 +1,7 @@
 package com.github.gronblack.pm.repository;
 
 import com.github.gronblack.pm.model.Lord;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,11 @@ public interface LordRepository extends BaseRepository<Lord> {
     @Query("SELECT l FROM Lord l WHERE l.id=:id")
     Optional<Lord> getWithPlanets(int id);
 
-    @Query(value = "SELECT l.* FROM LORD l LEFT JOIN PLANET p ON l.ID = p.LORD_ID WHERE p.ID IS NULL", nativeQuery = true)
-    List<Lord> getIdle();
+    // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.at-query.native
+    @Query(value = "SELECT l.* FROM LORD l LEFT JOIN PLANET p ON l.ID = p.LORD_ID WHERE p.ID IS NULL",
+            countQuery = "SELECT COUNT(*) FROM LORD l LEFT JOIN PLANET p ON l.ID = p.LORD_ID WHERE p.ID IS NULL",
+            nativeQuery = true)
+    List<Lord> getIdle(Pageable pageable);
 
     @Query(value = "SELECT TOP 10 * FROM Lord ORDER BY age", nativeQuery = true)
     List<Lord> getYoung();
