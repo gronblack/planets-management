@@ -36,8 +36,11 @@ Spring-Boot, Spring Data JPA, Jackson, JUnit, H2.
 - Написать тест на Selenium, который будет проверять работу интерфейса.
 
 ### curl (For windows use [Git Bash](https://git-scm.com/download)
-#### get all Lords
+#### get all Lords (default page size = 10, page number = 0, order by name)
 `curl -s http://localhost:8080/api/lords`
+
+#### get Lords with page parameters
+`curl -s "http://localhost:8080/api/lords?pageSize=5&pageNumber=1&order=id"`
 
 #### get Lord with id=5
 `curl -s http://localhost:8080/api/lords/5`
