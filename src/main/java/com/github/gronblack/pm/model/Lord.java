@@ -35,4 +35,10 @@ public class Lord extends BaseEntity {
         this.age = age;
         this.height = height;
     }
+
+    // https://stackoverflow.com/questions/8243400/on-delete-set-null-in-hibernate-in-onetomany
+    @PreRemove
+    private void preRemove() {
+        planets.forEach(planet -> planet.setLord(null));
+    }
 }

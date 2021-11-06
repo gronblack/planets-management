@@ -15,5 +15,5 @@ CREATE TABLE planet
     name             VARCHAR NOT NULL UNIQUE,
     radius           INTEGER NOT NULL,
     lord_id          INTEGER,
-    FOREIGN KEY (lord_id) REFERENCES lord (id)
+    FOREIGN KEY (lord_id) REFERENCES lord (id) ON DELETE SET NULL
 );
