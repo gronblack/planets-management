@@ -5,9 +5,11 @@ import com.github.gronblack.pm.repository.PlanetRepository;
 import com.github.gronblack.pm.to.PlanetFullTo;
 import com.github.gronblack.pm.to.PlanetTo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -38,8 +40,8 @@ public class PlanetController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlanetFullTo> get(@PathVariable int id) {
-        log.info("get {}", id);
+    public ResponseEntity<PlanetFullTo> getWithLord(@PathVariable int id) {
+        log.info("getWithLord {}", id);
         return ResponseEntity.of(createFullToOptional(repository.getWithLord(id), id));
     }
 
@@ -66,5 +68,13 @@ public class PlanetController {
         log.info("update {} with id={}", planet, id);
         assureIdConsistent(planet, id);
         repository.save(planet);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
+    public void setLord(@PathVariable int id, @RequestParam int lordId) {
+        log.info("Appoint Planet[id={}] to Lord[id={}]", id, lordId);
+        repository.setLord(id, lordId);
     }
 }

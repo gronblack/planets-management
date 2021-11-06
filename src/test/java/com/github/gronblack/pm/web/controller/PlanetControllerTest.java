@@ -1,8 +1,11 @@
 package com.github.gronblack.pm.web.controller;
 
+import com.github.gronblack.pm.model.Lord;
 import com.github.gronblack.pm.model.Planet;
+import com.github.gronblack.pm.repository.LordRepository;
 import com.github.gronblack.pm.repository.PlanetRepository;
 import com.github.gronblack.pm.util.json.JsonUtil;
+import com.github.gronblack.pm.web.testdata.LordTD;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,8 +13,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.github.gronblack.pm.web.testdata.CommonTD.*;
+import static com.github.gronblack.pm.web.testdata.LordTD.lord10;
 import static com.github.gronblack.pm.web.testdata.PlanetTD.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,7 +24,10 @@ class PlanetControllerTest extends BaseControllerTest {
     private static final String REST_URL = PlanetController.REST_URL + '/';
 
     @Autowired
-    private PlanetRepository repository;
+    private PlanetRepository planetRepository;
+
+    @Autowired
+    private LordRepository lordRepository;
 
     @Test
     void getAll() throws Exception {
@@ -58,7 +65,7 @@ class PlanetControllerTest extends BaseControllerTest {
         int newId = created.getId();
         newPlanet.setId(newId);
         MATCHER.assertMatch(created, newPlanet);
-        MATCHER.assertMatch(repository.getById(newId), newPlanet);
+        MATCHER.assertMatch(planetRepository.getById(newId), newPlanet);
     }
 
     @Test
@@ -79,7 +86,7 @@ class PlanetControllerTest extends BaseControllerTest {
                 .content(JsonUtil.writeValue(updated)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        MATCHER.assertMatch(repository.getById(EXIST_ID), updated);
+        MATCHER.assertMatch(planetRepository.getById(EXIST_ID), updated);
     }
 
     @Test
@@ -103,11 +110,24 @@ class PlanetControllerTest extends BaseControllerTest {
     }
 
     @Test
+    void enable() throws Exception {
+        perform(MockMvcRequestBuilders.patch(REST_URL + planet14.getId())
+                .param("lordId", String.valueOf(lord10.getId()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+        Lord lord = lordRepository.getWithPlanets(lord10.getId()).orElseThrow();
+        Planet planet = planetRepository.getById(planet14.getId());
+        LordTD.MATCHER.assertMatch(planet.getLord(), lord);
+        assertTrue(lord.getPlanets().contains(planet));
+    }
+
+    @Test
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + planet10.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertFalse(repository.findById(planet10.getId()).isPresent());
+        assertFalse(planetRepository.findById(planet10.getId()).isPresent());
     }
 
     @Test
