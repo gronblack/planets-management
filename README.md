@@ -40,7 +40,7 @@ Spring-Boot, Spring Data JPA, Jackson, JUnit, H2.
 `curl -s http://localhost:8080/api/lords`
 
 #### get Lords with page parameters
-`curl -s "http://localhost:8080/api/lords?pageSize=5&pageNumber=1&order=id"`
+`curl -s "http://localhost:8080/api/lords?size=5&page=1&order=id"`
 
 #### get Lord with id=5
 `curl -s http://localhost:8080/api/lords/5`
@@ -64,7 +64,7 @@ Spring-Boot, Spring Data JPA, Jackson, JUnit, H2.
 `curl -s http://localhost:8080/api/planets`
 
 #### get Planets with page parameters
-`curl -s "http://localhost:8080/api/planets?pageSize=5&pageNumber=1&order=id"`
+`curl -s "http://localhost:8080/api/planets?size=5&page=1&order=id"`
 
 #### get Planet with id=5
 `curl -s http://localhost:8080/api/planets/5`
@@ -73,10 +73,10 @@ Spring-Boot, Spring Data JPA, Jackson, JUnit, H2.
 `curl -s -X DELETE http://localhost:8080/api/planets/5`
 
 #### create new Planet
-`curl -s -X POST -d '{"name": "New Planet", "radius": 30856}' -H 'Content-Type:application/json' http://localhost:8080/api/planets`
+`curl -s -X POST -d '{"name": "New Planet"}' -H 'Content-Type:application/json' http://localhost:8080/api/planets`
 
 #### update Planet with id=1
-`curl -s -X PUT -d '{"name": "Updated Planet", "radius": 9999}' -H 'Content-Type: application/json' http://localhost:8080/api/planets/1`
+`curl -s -X PUT -d '{"name": "Updated Planet"}' -H 'Content-Type: application/json' http://localhost:8080/api/planets/1`
 
 #### set Lord with id=10 for Planet with id=14
 `curl -s -X PATCH http://localhost:8080/api/planets/14?lordId=10`

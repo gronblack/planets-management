@@ -5,7 +5,6 @@ import lombok.ToString;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 @Value
@@ -13,13 +12,10 @@ import javax.validation.constraints.Size;
 @ToString(callSuper = true)
 public class PlanetFullTo extends BaseTo {
 
-    @Positive int radius;
+    LordTo lordTo;
 
-    LordTo lord;
-
-    public PlanetFullTo(Integer id, @NotBlank @Size(min = 1, max = 100) String name, int radius, LordTo lordTo) {
+    public PlanetFullTo(Integer id, @NotBlank @Size(min = 1, max = 100) String name, LordTo lordTo) {
         super(id, name);
-        this.radius = radius;
-        this.lord = lordTo;
+        this.lordTo = lordTo;
     }
 }

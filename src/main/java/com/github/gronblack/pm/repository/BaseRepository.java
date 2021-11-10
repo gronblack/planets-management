@@ -25,13 +25,13 @@ public interface BaseRepository<T> extends JpaRepository<T, Integer> {
 
     default PageRequest createPageRequest(Map<String, String> params) {
         int PAGE_NUMBER = 0;
-        int PAGE_SIZE = 10;
+        int PAGE_SIZE = 20;
         String ORDER = "name";
 
-        int pageNumber = params.containsKey("pageNumber") ? Integer.parseInt(params.get("pageNumber")) : PAGE_NUMBER;
-        int pageSize = params.containsKey("pageSize") ? Integer.parseInt(params.get("pageSize")) : PAGE_SIZE;
+        int page = params.containsKey("page") ? Integer.parseInt(params.get("page")) : PAGE_NUMBER;
+        int size = params.containsKey("size") ? Integer.parseInt(params.get("size")) : PAGE_SIZE;
         String order = params.getOrDefault("order", ORDER);
 
-        return PageRequest.of(pageNumber, pageSize, Sort.by(order));
+        return PageRequest.of(page, size, Sort.by(order));
     }
 }

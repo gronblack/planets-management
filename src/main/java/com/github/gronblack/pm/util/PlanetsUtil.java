@@ -21,14 +21,18 @@ public class PlanetsUtil {
     }
 
     private static PlanetTo createTo(Planet planet) {
-        return new PlanetTo(planet.getId(), planet.getName());
+        return new PlanetTo(planet.getId(), planet.getName(), planet.getLord() == null ? null : planet.getLord().getId());
     }
 
     public static PlanetFullTo createFullTo(Planet planet) {
-        return new PlanetFullTo(planet.getId(), planet.getName(), planet.getRadius(), planet.getLord() == null ? null : LordsUtil.createTo(planet.getLord()));
+        return new PlanetFullTo(planet.getId(), planet.getName(), planet.getLord() == null ? null : LordsUtil.createTo(planet.getLord()));
     }
 
     public static Optional<PlanetFullTo> createFullToOptional(Optional<Planet> planetOptional, int id) {
         return Optional.of(createFullTo(planetOptional.orElseThrow(notFound(Planet.class, id))));
+    }
+
+    public static Planet getFromTo(PlanetTo to) {
+        return to == null ? null : new Planet(to.getId(), to.getName());
     }
 }

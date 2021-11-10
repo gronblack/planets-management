@@ -2,6 +2,7 @@ package com.github.gronblack.pm.web.controller;
 
 import com.github.gronblack.pm.model.Lord;
 import com.github.gronblack.pm.repository.LordRepository;
+import com.github.gronblack.pm.to.LordTo;
 import com.github.gronblack.pm.util.LordsUtil;
 import com.github.gronblack.pm.util.json.JsonUtil;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ class LordControllerTest extends BaseControllerTest {
     @Test
     void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL)
-                .param("pageSize", String.valueOf(12)))
+                .param("size", String.valueOf(12)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MATCHER_TO.contentJson(lordTos));
@@ -70,21 +71,23 @@ class LordControllerTest extends BaseControllerTest {
 
     @Test
     void createWithLocation() throws Exception {
-        Lord newLord = new Lord(null, "New Lord", 30, 185);
+        LordTo newTo = new LordTo(null, "New Lord", 30);
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newLord)))
+                .content(JsonUtil.writeValue(newTo)))
                 .andExpect(status().isCreated());
         Lord created = MATCHER.readFromJson(action);
         int newId = created.getId();
-        newLord.setId(newId);
+        newTo.setId(newId);
+
+        Lord newLord = new Lord(newTo.getId(), newTo.getName(), newTo.getAge());
         MATCHER.assertMatch(created, newLord);
         MATCHER.assertMatch(repository.getById(newId), newLord);
     }
 
     @Test
     void createInvalid() throws Exception {
-        Lord invalid = new Lord(null, "", 0, 0);
+        LordTo invalid = new LordTo(null, "", 0);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))
@@ -94,18 +97,20 @@ class LordControllerTest extends BaseControllerTest {
 
     @Test
     void update() throws Exception {
-        Lord updated = new Lord(EXIST_ID, "Updatable Lord", 100, 185);
+        LordTo updatedTo = new LordTo(EXIST_ID, "Updatable Lord", 100);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated)))
+                .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        MATCHER.assertMatch(repository.getById(EXIST_ID), updated);
+
+        Lord updatedLord = new Lord(updatedTo.getId(), updatedTo.getName(), updatedTo.getAge());
+        MATCHER.assertMatch(repository.getById(EXIST_ID), updatedLord);
     }
 
     @Test
     void updateInvalid() throws Exception {
-        Lord invalid = new Lord(EXIST_ID, "", 0, 0);
+        LordTo invalid = new LordTo(EXIST_ID, "", 0);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))
@@ -115,7 +120,7 @@ class LordControllerTest extends BaseControllerTest {
 
     @Test
     void updateHtmlUnsafe() throws Exception {
-        Lord updated = new Lord(EXIST_ID, "<script>alert(123)</script>", 100, 180);
+        LordTo updated = new LordTo(EXIST_ID, "<script>alert(123)</script>", 100);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))

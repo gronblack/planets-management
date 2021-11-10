@@ -1,14 +1,14 @@
 package com.github.gronblack.pm.to;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
-@Value
+@Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class LordTo extends BaseTo {

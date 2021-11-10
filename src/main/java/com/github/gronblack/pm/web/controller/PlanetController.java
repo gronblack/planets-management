@@ -2,10 +2,10 @@ package com.github.gronblack.pm.web.controller;
 
 import com.github.gronblack.pm.model.Planet;
 import com.github.gronblack.pm.repository.PlanetRepository;
+import com.github.gronblack.pm.service.PlanetService;
 import com.github.gronblack.pm.to.PlanetFullTo;
 import com.github.gronblack.pm.to.PlanetTo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +29,21 @@ import static com.github.gronblack.pm.util.validation.ValidationUtil.checkNew;
 public class PlanetController {
     static final String REST_URL = "/api/planets";
     private final PlanetRepository repository;
+    private final PlanetService service;
 
-    public PlanetController(PlanetRepository repository) {
+    public PlanetController(PlanetRepository repository, PlanetService service) {
         this.repository = repository;
+        this.service = service;
     }
 
     @GetMapping
     public List<PlanetTo> getAll(@RequestParam Map<String,String> params) {
         return getTos(repository.findAll(repository.createPageRequest(params)).toList());
+    }
+
+    @GetMapping("/count")
+    public int count() {
+        return (int) repository.count();
     }
 
     @GetMapping("/{id}")
@@ -52,10 +59,10 @@ public class PlanetController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Planet> createWithLocation(@Valid @RequestBody Planet planet) {
-        log.info("create {}", planet);
-        checkNew(planet);
-        Planet created = repository.save(planet);
+    public ResponseEntity<Planet> createWithLocation(@Valid @RequestBody PlanetTo to) {
+        log.info("create {}", to);
+        checkNew(to);
+        Planet created = service.saveFromTo(to);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -64,10 +71,10 @@ public class PlanetController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable int id, @Valid @RequestBody Planet planet) {
-        log.info("update {} with id={}", planet, id);
-        assureIdConsistent(planet, id);
-        repository.save(planet);
+    public void update(@PathVariable int id, @Valid @RequestBody PlanetTo to) {
+        log.info("update {} with id={}", to, id);
+        assureIdConsistent(to, id);
+        service.saveFromTo(to);
     }
 
     @PatchMapping("/{id}")

@@ -4,6 +4,7 @@ import com.github.gronblack.pm.model.Lord;
 import com.github.gronblack.pm.model.Planet;
 import com.github.gronblack.pm.repository.LordRepository;
 import com.github.gronblack.pm.repository.PlanetRepository;
+import com.github.gronblack.pm.to.PlanetTo;
 import com.github.gronblack.pm.util.json.JsonUtil;
 import com.github.gronblack.pm.web.testdata.LordTD;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ class PlanetControllerTest extends BaseControllerTest {
     @Test
     void getAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL)
-                .param("pageSize", String.valueOf(14)))
+                .param("size", String.valueOf(14)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MATCHER_TO.contentJson(planetTos));
@@ -56,21 +57,23 @@ class PlanetControllerTest extends BaseControllerTest {
 
     @Test
     void createWithLocation() throws Exception {
-        Planet newPlanet = new Planet(null, "New Planet", 56236);
+        PlanetTo newTo = new PlanetTo(null, "New Planet", null);
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newPlanet)))
+                .content(JsonUtil.writeValue(newTo)))
                 .andExpect(status().isCreated());
         Planet created = MATCHER.readFromJson(action);
         int newId = created.getId();
-        newPlanet.setId(newId);
+        newTo.setId(newId);
+
+        Planet newPlanet = new Planet(newTo.getId(), newTo.getName());
         MATCHER.assertMatch(created, newPlanet);
         MATCHER.assertMatch(planetRepository.getById(newId), newPlanet);
     }
 
     @Test
     void createInvalid() throws Exception {
-        Planet invalid = new Planet(null, "", 100569);
+        PlanetTo invalid = new PlanetTo(null, "", null);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))
@@ -80,18 +83,20 @@ class PlanetControllerTest extends BaseControllerTest {
 
     @Test
     void update() throws Exception {
-        Planet updated = new Planet(EXIST_ID, "Updatable Planet", 56987);
+        PlanetTo updatedTo = new PlanetTo(EXIST_ID, "Updatable Planet", null);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated)))
+                .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        MATCHER.assertMatch(planetRepository.getById(EXIST_ID), updated);
+
+        Planet updatedPlanet = new Planet(updatedTo.getId(), updatedTo.getName());
+        MATCHER.assertMatch(planetRepository.getById(EXIST_ID), updatedPlanet);
     }
 
     @Test
     void updateInvalid() throws Exception {
-        Planet invalid = new Planet(EXIST_ID, "", 0);
+        PlanetTo invalid = new PlanetTo(EXIST_ID, "", null);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))
@@ -101,7 +106,7 @@ class PlanetControllerTest extends BaseControllerTest {
 
     @Test
     void updateHtmlUnsafe() throws Exception {
-        Planet updated = new Planet(EXIST_ID, "<script>alert(123)</script>", 15836);
+        PlanetTo updated = new PlanetTo(EXIST_ID, "<script>alert(123)</script>", null);
         perform(MockMvcRequestBuilders.put(REST_URL + EXIST_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
@@ -110,7 +115,7 @@ class PlanetControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void enable() throws Exception {
+    void setLord() throws Exception {
         perform(MockMvcRequestBuilders.patch(REST_URL + planet14.getId())
                 .param("lordId", String.valueOf(lord10.getId()))
                 .contentType(MediaType.APPLICATION_JSON))

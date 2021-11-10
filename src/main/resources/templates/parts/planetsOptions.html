@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<form th:fragment="optionsForm" class="mb-3 rounded px-3 pt-1" style="background-color:#E9ECEF">
+    <div class="row pb-3">
+        <div class="col-md-2">
+            <label for="order">Order by</label>
+            <select class="form-select" id="order">
+                <option value="id">Id</option>
+                <option value="name" selected>Name</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="size">Page size:</label>
+            <select class="form-select" id="size">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+        <div class="col d-flex justify-content-end align-items-end">
+            <button type="button" class="btn btn-success" data-modal-create>Create</button>
+        </div>
+        <div class="col-md-1 d-flex justify-content-end align-items-end">
+            <button type="button" class="btn btn-primary" data-reload>Reload</button>
+        </div>
+    </div>
+</form>
+<form th:fragment="modalBody" class="modal-body">
+    <div class="input-group" data-input-group-id>
+        <label class="input-group-text" for="modal-id">Id</label>
+        <input type="number" class="form-control text-end" id="modal-id" name="id" readonly>
+    </div>
+    <div class="input-group">
+        <label class="input-group-text" for="modal-name">Name</label>
+        <input type="text" class="form-control text-end" id="modal-name" name="name">
+    </div>
+    <div class="input-group" data-input-group-lord>
+        <label class="input-group-text" for="modal-lord">Current lord</label>
+        <input type="text" class="form-control text-end" id="modal-lord" name="lord" readonly>
+    </div>
+    <div class="input-group" data-input-group-lord-id>
+        <label class="input-group-text" for="modal-lord-id">Set new Lord (Id)</label>
+        <input type="number" class="form-control text-end" id="modal-lord-id" name="lordId">
+    </div>
+</form>
+</html>

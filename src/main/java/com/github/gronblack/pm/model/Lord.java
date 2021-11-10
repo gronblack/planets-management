@@ -21,19 +21,14 @@ public class Lord extends BaseEntity {
     @Positive
     private int age;
 
-    @Column(name = "height", nullable = false)
-    @Positive
-    private int height;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "lord")
     @JsonManagedReference
     @ToString.Exclude
     private Set<Planet> planets;
 
-    public Lord(Integer id, @NotBlank @Size(min = 1, max = 100) String name, int age, int height) {
+    public Lord(Integer id, @NotBlank @Size(min = 1, max = 100) String name, int age) {
         super(id, name);
         this.age = age;
-        this.height = height;
     }
 
     // https://stackoverflow.com/questions/8243400/on-delete-set-null-in-hibernate-in-onetomany

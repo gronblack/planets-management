@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -16,8 +17,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.gronblack.pm.util.LordsUtil.createFullToOptional;
-import static com.github.gronblack.pm.util.LordsUtil.getTos;
+import static com.github.gronblack.pm.util.LordsUtil.*;
 import static com.github.gronblack.pm.util.validation.ValidationUtil.assureIdConsistent;
 import static com.github.gronblack.pm.util.validation.ValidationUtil.checkNew;
 
@@ -44,6 +44,11 @@ public class LordController {
         return ResponseEntity.of(createFullToOptional(repository.getWithPlanets(id), id));
     }
 
+    @GetMapping("/count")
+    public int count(@RequestParam @Nullable Boolean idle) {
+        return Boolean.TRUE.equals(idle) ? repository.idleCount() : (int) repository.count();
+    }
+
     @GetMapping("/idle")
     public List<LordTo> getIdle(@RequestParam Map<String,String> params) {
         log.info("getIdle");
@@ -64,10 +69,10 @@ public class LordController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Lord> createWithLocation(@Valid @RequestBody Lord lord) {
-        log.info("create {}", lord);
-        checkNew(lord);
-        Lord created = repository.save(lord);
+    public ResponseEntity<Lord> createWithLocation(@Valid @RequestBody LordTo to) {
+        log.info("create {}", to);
+        checkNew(to);
+        Lord created = repository.save(getFromTo(to));
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -76,9 +81,9 @@ public class LordController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable int id, @Valid @RequestBody Lord lord) {
-        log.info("update {} with id={}", lord, id);
-        assureIdConsistent(lord, id);
-        repository.save(lord);
+    public void update(@PathVariable int id, @Valid @RequestBody LordTo to) {
+        log.info("update {} with id={}", to, id);
+        assureIdConsistent(to, id);
+        repository.save(getFromTo(to));
     }
 }

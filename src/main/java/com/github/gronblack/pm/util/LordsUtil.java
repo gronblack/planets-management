@@ -25,10 +25,14 @@ public class LordsUtil {
     }
 
     public static LordFullTo createFullTo(Lord lord) {
-        return new LordFullTo(lord.getId(), lord.getName(), lord.getAge(), lord.getHeight(), PlanetsUtil.getTos(lord.getPlanets()));
+        return new LordFullTo(lord.getId(), lord.getName(), lord.getAge(), PlanetsUtil.getTos(lord.getPlanets()));
     }
 
     public static Optional<LordFullTo> createFullToOptional(Optional<Lord> lordOptional, int id) {
         return Optional.of(createFullTo(lordOptional.orElseThrow(notFound(Lord.class, id))));
+    }
+
+    public static Lord getFromTo(LordTo to) {
+        return to == null ? null : new Lord(to.getId(), to.getName(), to.getAge());
     }
 }
