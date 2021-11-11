@@ -1,5 +1,6 @@
 package com.github.gronblack.pm.service;
 
+import com.github.gronblack.pm.model.Lord;
 import com.github.gronblack.pm.model.Planet;
 import com.github.gronblack.pm.repository.LordRepository;
 import com.github.gronblack.pm.repository.PlanetRepository;
@@ -20,5 +21,10 @@ public class PlanetService {
             planet.setLord(lordRepository.getById(to.getLordId()));
         }
         return planetRepository.save(planet);
+    }
+
+    public void setLord(int id, Integer lordId) {
+        Lord lord = lordId == null ? null : lordRepository.getById(lordId);
+        planetRepository.getById(id).setLord(lord);
     }
 }

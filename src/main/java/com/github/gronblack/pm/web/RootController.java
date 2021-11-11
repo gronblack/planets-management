@@ -16,6 +16,11 @@ public class RootController {
         return "lords";
     }
 
+    @GetMapping("/young10")
+    public String young10() {
+        return "young10";
+    }
+
     @GetMapping("/planets")
     public String planets() {
         return "planets";

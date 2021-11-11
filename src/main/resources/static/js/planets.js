@@ -1,3 +1,6 @@
+ctx.ajaxPath = "/api/planets/";
+ctx.editablePros = "lordId";
+
 function setModalFields(modalBlock, data) {
     if (data == null || data['lordTo'] == null) {
         modalBlock.find('[data-input-group-lord]').hide();
@@ -16,4 +19,8 @@ function setModalFields(modalBlock, data) {
         modalBlock.find('[name="lord"]').val(lord.name + " (id=" + lord.id + ", age=" + lord.age + ")");
         modalBlock.find('[name="lordId"]').val(lord.id);
     }
+}
+
+function prepareAndGetSpecialSuffix() {
+    return ctx.suffix;
 }

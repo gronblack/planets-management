@@ -122,7 +122,7 @@ class PlanetControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
         Lord lord = lordRepository.getWithPlanets(lord10.getId()).orElseThrow();
-        Planet planet = planetRepository.getById(planet14.getId());
+        Planet planet = planetRepository.findById(planet14.getId()).orElseThrow();
         LordTD.MATCHER.assertMatch(planet.getLord(), lord);
         assertTrue(lord.getPlanets().contains(planet));
     }

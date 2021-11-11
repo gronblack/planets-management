@@ -1,11 +1,11 @@
 let ctx = {
-    ajaxPath: "/api/" + document.getElementById("about").getAttribute("about") + "/",
     page: 0,
-    size: 10,
-    order: "",
-    idle: null,
     tableDone: false,
     modalBlock: null,
+    editablePros: "",
+    countParams: "",
+    useCommonSuffix: true,
+    createPaging: true,
     location: window.location.origin
 }
 
@@ -25,18 +25,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function loadContent() {
-    let idle = document.getElementById("idle");
-    if (idle !== null) {
-        ctx.idle = !!idle.checked;
-    }
-    ctx.order = document.getElementById("order").value;
-    ctx.size = parseInt(document.getElementById("size").value);
+function updateCommonSuffix() {
+    let orderNode = document.getElementById("order");
+    let sizeNode = document.getElementById("size");
 
-    let suffix = (ctx.idle ? "/idle" : "") + "?order=" + ctx.order + "&size=" + ctx.size + "&page=" + ctx.page;
+    let order = orderNode ? orderNode.value : "";
+    ctx.size = sizeNode ? parseInt(sizeNode.value) : 0;
+    ctx.suffix = "?order=" + order + "&size=" + ctx.size + "&page=" + ctx.page;
+}
+
+function loadContent() {
+    if (ctx.useCommonSuffix) {
+        updateCommonSuffix();
+    }
+    let suffix = prepareAndGetSpecialSuffix();
     let objects = JSON.parse(get(ctx.ajaxPath + suffix).responseText);
-    let objectsCount = get(ctx.ajaxPath + "/count" + suffix).responseText;
-    createPaging(ctx.size, objectsCount, ctx.page);
+
+    if (ctx.createPaging) {
+        let objectsCount = get(ctx.ajaxPath + "/count" + ctx.countParams).responseText;
+        createPaging(ctx.size, objectsCount, ctx.page);
+    }
 
     if (objects.length > 0) {
         let table = document.getElementById("mainTable");
@@ -51,31 +59,51 @@ function loadContent() {
             let tr = document.createElement("tr");
             for (let prop in objects[i]) {
                 let td = document.createElement("td");
-                td.appendChild(document.createTextNode(objects[i][prop]));
+                let node;
+                if (ctx.editablePros.includes(prop)) {
+                    node = createInput("number", objects[i][prop], "form-control text-end w-25");
+                    node.addEventListener('change', e => setLordRow(e.target, objects[i]['id']));
+                } else {
+                    node = document.createTextNode(objects[i][prop]);
+                }
+                td.appendChild(node);
                 tr.appendChild(td);
             }
 
-            let updateBtn = document.createElement("button");
-            updateBtn.className = "btn btn-outline-primary";
-            updateBtn.innerText = "Edit";
-            updateBtn.addEventListener('click', ev => updateRow(objects[i]['id']));
-            let updateTd = document.createElement("td");
-            updateTd.className = "text-center col-md-1";
-            updateTd.appendChild(updateBtn);
+            let tdClassName = "text-center col-md-1";
+            let updateTd = createTd(tdClassName);
+            updateTd.appendChild(createButton("btn btn-outline-primary", "Edit", e => updateRow(objects[i]['id'])));
             tr.appendChild(updateTd);
 
-            let deleteBtn = document.createElement("button");
-            deleteBtn.className = "btn btn-outline-danger";
-            deleteBtn.innerText = "Delete";
-            deleteBtn.addEventListener('click', ev => deleteRow(objects[i]['id']));
-            let deleteTd = document.createElement("td");
-            deleteTd.className = "text-center col-md-1";
-            deleteTd.appendChild(deleteBtn);
+            let deleteTd = createTd(tdClassName);
+            deleteTd.appendChild(createButton("btn btn-outline-danger", "Delete", e => deleteRow(objects[i]['id'])));
             tr.appendChild(deleteTd);
 
             tableBody.appendChild(tr);
         }
     }
+}
+
+function createInput(type, value, className) {
+    let input = document.createElement("input");
+    input.type = type;
+    input.value = value;
+    input.className = className;
+    return input;
+}
+
+function createButton(className, text, clickHandler) {
+    let btn = document.createElement("button");
+    btn.className = className;
+    btn.innerText = text
+    btn.addEventListener('click', clickHandler);
+    return btn;
+}
+
+function createTd(className) {
+    let td = document.createElement("td");
+    td.className = className;
+    return td;
 }
 
 function modalShow(objectToUpdate) {
@@ -97,6 +125,17 @@ function modalHide() {
     ctx.modalBlock.modal('hide');
     ctx.modalBlock.find('form')[0].reset();
     ctx.modalBlock.find('[data-response-status]').text("").hide();
+}
+
+function setLordRow(node, id) {
+    let lordId = node.value;
+    let url = ctx.ajaxPath + id + "?lordId=" + lordId;
+    let response = sendRequest("PATCH", url, null);
+    if (response.status >= 200 && response.status <= 299) {
+        alert("Set Lord[id=" + lordId + "] for Planet[id=" + id + "]. Success!");
+    } else {
+        alert("Response status: " + response.status);
+    }
 }
 
 function updateRow(id) {
@@ -184,9 +223,13 @@ function get(requestUrl) {
     return sendRequest("GET", requestUrl, null);
 }
 
+function normalizeURL(url) {
+    return url.replaceAll("//", "/");
+}
+
 function sendRequest(type, url, body) {
     let Httpreq = new XMLHttpRequest();
-    Httpreq.open(type, url, false);
+    Httpreq.open(type, normalizeURL(url), false);
     if (type === "POST" || type === "PUT") {
         Httpreq.setRequestHeader("Content-type", "application/json;charset=UTF-8");
     }

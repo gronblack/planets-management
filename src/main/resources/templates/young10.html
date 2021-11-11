@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="parts/head :: head(about='young10')"></head>
+<body th:fragment="body">
+<header th:replace="parts/header :: header"></header>
+<h1 class="text-center py-3">Top 10 young Lords</h1>
+<div class="container">
+    <table class="table" id="mainTable">
+        <thead class="table-dark"></thead>
+        <tbody id="mainTableBody"></tbody>
+    </table>
+</div>
+</body>
+</html>

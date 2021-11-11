@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -71,6 +73,7 @@ public class PlanetController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Transactional
     public void update(@PathVariable int id, @Valid @RequestBody PlanetTo to) {
         log.info("update {} with id={}", to, id);
         assureIdConsistent(to, id);
@@ -79,9 +82,9 @@ public class PlanetController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional
-    public void setLord(@PathVariable int id, @RequestParam int lordId) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void setLord(@PathVariable int id, @RequestParam @Nullable Integer lordId) {
         log.info("Appoint Planet[id={}] to Lord[id={}]", id, lordId);
-        repository.setLord(id, lordId);
+        service.setLord(id, lordId);
     }
 }
