@@ -21,6 +21,7 @@ import java.sql.SQLException;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public abstract class BaseControllerTest {
+
     // https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-testing-spring-boot-applications-testing-with-mock-environment
     @Autowired
     private MockMvc mockMvc;
@@ -31,7 +32,7 @@ public abstract class BaseControllerTest {
 
     // https://stackoverflow.com/a/46237069
     @BeforeAll
-    static void setUp() throws SQLException {
+    protected static void setupServer() throws SQLException {
         AppUtil.stopTCPServer();
         AppUtil.createTcpServer();
     }

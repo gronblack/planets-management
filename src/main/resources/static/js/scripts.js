@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     loadContent();
 
     $("[data-reload]").click(loadContent);
-    $("[data-modal-create]").click(function() {
+    $("[data-create]").click(function() {
         modalShow();
     });
     $("[data-modal-close]").click(function() {
@@ -59,6 +59,7 @@ function loadContent() {
             let tr = document.createElement("tr");
             for (let prop in objects[i]) {
                 let td = document.createElement("td");
+                td.dataset[prop] = "";
                 let node;
                 if (ctx.editablePros.includes(prop)) {
                     node = createInput("number", objects[i][prop], "form-control text-end w-25");
@@ -72,11 +73,11 @@ function loadContent() {
 
             let tdClassName = "text-center col-md-1";
             let updateTd = createTd(tdClassName);
-            updateTd.appendChild(createButton("btn btn-outline-primary", "Edit", e => updateRow(objects[i]['id'])));
+            updateTd.appendChild(createButton("btn btn-outline-primary", "Edit", "update", e => updateRow(objects[i]['id'])));
             tr.appendChild(updateTd);
 
             let deleteTd = createTd(tdClassName);
-            deleteTd.appendChild(createButton("btn btn-outline-danger", "Delete", e => deleteRow(objects[i]['id'])));
+            deleteTd.appendChild(createButton("btn btn-outline-danger", "Delete", "delete", e => deleteRow(objects[i]['id'])));
             tr.appendChild(deleteTd);
 
             tableBody.appendChild(tr);
@@ -92,10 +93,11 @@ function createInput(type, value, className) {
     return input;
 }
 
-function createButton(className, text, clickHandler) {
+function createButton(className, text, dataAttr, clickHandler) {
     let btn = document.createElement("button");
     btn.className = className;
-    btn.innerText = text
+    btn.innerText = text;
+    btn.dataset[dataAttr] = "";
     btn.addEventListener('click', clickHandler);
     return btn;
 }
