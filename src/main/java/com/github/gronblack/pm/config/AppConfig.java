@@ -1,22 +1,20 @@
-package com.github.gronblack.pm.confog;
+package com.github.gronblack.pm.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.github.gronblack.pm.util.AppUtil;
+import com.github.gronblack.pm.util.json.JsonUtil;
 import org.h2.tools.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.github.gronblack.pm.util.json.JsonUtil;
 
 import java.sql.SQLException;
 
 @Configuration
-@EnableCaching
 public class AppConfig {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
