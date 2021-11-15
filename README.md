@@ -35,6 +35,8 @@ Spring-Boot, Spring Data JPA, Jackson, JUnit, H2.
 - Создать примитивный web интерфейс, в котором будут работать все методы API (красота, дизайн, usability оцениваться НЕ будут).
 - Написать тест на Selenium, который будет проверять работу интерфейса.
 
+### Selenium test: [Repo](https://github.com/gronblack/PM_UI_test)
+
 ### curl (For windows use [Git Bash](https://git-scm.com/download))
 #### get all Lords (default page size = 10, page number = 0, order by name)
 `curl -s http://localhost:8080/api/lords`
